@@ -1,0 +1,61 @@
+version: "3"
+services:
+  #Web 
+  handsonwebfrontend-web:
+    container_name: handsonwebfrontend-web
+    build: ./web
+    privileged: true
+    volumes:
+      - ../src:/var/www/html
+    ports:
+      - 80:80
+    depends_on:
+      - handsonwebfrontend-mysql-db
+    tty: true
+    stdin_open: true
+
+  # MySQL
+  handsonwebfrontend-mysql-db:
+#    image: mariadb:latest
+    image: mysql:5.7
+    restart: always
+    container_name: handsonwebfrontend-mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: temperature
+      MYSQL_USER: temperatureuser
+      MYSQL_PASSWORD: temperaturepass
+      MYSQL_START_TIMEOUT: 1200000
+      TZ: 'Asia/Tokyo'
+#    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ../database/data:/var/lib/mysql
+#      - ../database/mysql_conf/:/etc/mysql/conf.d
+#      - ../database/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ../database/sql:/docker-entrypoint-initdb.d
+      - ../database/log/mysql:/var/log/mysql
+    ports:
+      - 3306:3306
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 1g
+
+  # phpmyadmin
+  handsonwebfrontend-phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: handsonwebfrontend-mysql-db
+      PMA_USER: temperatureuser
+      PMA_PASSWORD: temperaturepass
+      PMA_PORT: 3306
+    links:
+      - handsonwebfrontend-mysql-db
+    ports:
+      - 8080:80
+    volumes:
+    #  - ../src/phpMyAdmin/sessions:/sessions
+      - ../phpMyAdmin/sessions:/sessions
+    depends_on:
+      - handsonwebfrontend-mysql-db
