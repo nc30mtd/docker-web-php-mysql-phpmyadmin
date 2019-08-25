@@ -1,4 +1,4 @@
-# dockerでWeb+PHP+MySQL+PhpMyAdmin環境のデプロイ用フロントエンド
+# dockerでWeb+PHP+MySQL+PhpMyAdmin環境構築するテンプレート
 
  - データベース：mysql
  - ユーザーやデータベース名称についてはdocker-compose.ymlにて確認すること
